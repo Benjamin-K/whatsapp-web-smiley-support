@@ -1,0 +1,19 @@
+{
+  ":D":     {"alt": "😄", "class": "emoji emojiordered1157"},
+  ":)":     {"alt": "😊", "class": "emoji emojiordered1163"},
+  ";)":     {"alt": "😉", "class": "emoji emojiordered1162"},
+  "&lt;3":  {"alt": "❤", "class": "emoji emojiordered0129"},
+  ":P":     {"alt": "😛", "class": "emoji emojiordered1180"},
+  ":(":     {"alt": "😔", "class": "emoji emojiordered1173"},
+  "X(":     {"alt": "😣", "class": "emoji emojiordered1196"},
+  ":'(":    {"alt": "😢", "class": "emoji emojiordered1190"},
+  ":O":     {"alt": "😮", "class": "emoji emojiordered1199"},
+  "8)":     {"alt": "😎", "class": "emoji emojiordered1167"},
+  "B)":     {"alt": "😎", "class": "emoji emojiordered1167"},
+  "O-)":    {"alt": "😇", "class": "emoji emojiordered1160"},
+  ":bok:":  {"alt": "💩", "class": "emoji emojiordered0968"},
+  ":+1:":   {"alt": "👍🏼", "class": "emoji emojiordered0735"},
+  ":-1:":   {"alt": "👎🏼", "class": "emoji emojiordered0741"},
+  ":*":     {"alt": "😘", "class": "emoji emojiordered1177"},
+  ":grimacing:": {"alt": "😁", "class": "emoji emojiordered1154"}
+}

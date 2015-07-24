@@ -1,71 +1,59 @@
-/*
-  author : Eray Arslan
-  for : Furkan Başaran <3
+/**
+ * @author : Benjamin Klix
  */
-var ea;
-$(document).ready(function () {
+(function(){
 
-    $.fn.focusEnd = function() {
-        
-        $(this).focus();
-        
-        var tmp = $('<span />').appendTo($(this)),
-            node = tmp.get(0),
-            range = null,
-            sel = null;
+  var config = {
+    icons: {},
+    additionalAttributes: 'draggable="false" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"'
+  };
 
-        if (document.selection) {
-            range = document.body.createTextRange();
-            range.moveToElementText(node);
-            range.select();
-        } else if (window.getSelection) {
-            range = document.createRange();
-            range.selectNode(node);
-            sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
+  var helpers = {
+    loadConfig: function(config) {
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          config[config] = JSON.parse(xhr.response);
         }
+      };
+      xhr.open("GET", chrome.extension.getURL('/config/'+config+'.json'), true);
+      xhr.send();
+    },
+    focusEnd: function(element) {
+      element.focus();
 
-        tmp.remove();
-        
-        return this;
+      var node = document.createElement('span');
+
+      element.appendChild(node);
+
+      helpers.range = document.createRange();
+      helpers.range.selectNode(node);
+      helpers.selection.removeAllRanges();
+      helpers.selection.addRange(range);
+
+      element.removeChild(node);
+    },
+    selection: window.getSelection(),
+    range: null
+  };
+
+  document.addEventListener('keyup', function(e) {
+    if (e.target.isContentEditable) {
+      var message = e.target.innerHTML;
+
+      for (var string in icons) {
+        if (message.length - string.length > -1 &&
+            message.lastIndexOf(string) === message.length - string.length) {
+          e.target.innerHTML = message.substr(0, message.length - string.length) +
+            '<img alt="'+icons[string].alt+'" class="'+icons[string]['class']+'" '+
+                  config.additionalAttributes+'>';
+          helpers.focusEnd(e.target);
+          break;
+        }
+      }
     }
+  });
 
-    $('body').on('keyup', '#compose-input > div', function(e) {
-        
-        var message = $('#compose-input > div').html();
+  helpers.loadConfig('icons');
 
-        var regex = /\:d/ig;
-        message = message.replace(regex, '<img alt="😄" class="emoji emojie415" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\:\)/ig;
-        message = message.replace(regex, '<img alt="😊" class="emoji emojie056" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\;\)/ig;
-        message = message.replace(regex, '<img alt="😉" class="emoji emojie405" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\<3/ig;
-        message = message.replace(regex, '<img alt="😍" class="emoji emojie106" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\:p/ig;
-        message = message.replace(regex, '<img alt="😛" class="emoji emoji1f61b" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\*\-p/ig;
-        message = message.replace(regex, '<img alt="😜" class="emoji emojie105" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\:\(/ig;
-        message = message.replace(regex, '<img alt="😞" class="emoji emojie058" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /x\(/ig;
-        message = message.replace(regex, '<img alt="😣" class="emoji emojie406" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\:\'\(/ig;
-        message = message.replace(regex, '<img alt="😢" class="emoji emojie413" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\:\O/ig;
-        message = message.replace(regex, '<img alt="😮" class="emoji emoji1f62e" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /B\|/ig;
-        message = message.replace(regex, '<img alt="😎" class="emoji emoji1f60e" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /O\-\)/ig;
-        message = message.replace(regex, '<img alt="😇" class="emoji emoji1f607" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        regex = /\:bok/ig;
-        message = message.replace(regex, '<img alt="💩" class="emoji emojie05a" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">');
-        
-        $('#compose-input > div').html(message);
-
-        $('#compose-input > div').focusEnd();
-                  
-    });
-
-});
+})();
