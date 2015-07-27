@@ -1,8 +1,7 @@
 {
   "name" : "whatsapp web client smiley support",
-  "author":   "Furkan BAŞARAN",
-  "edited_by": "Benjamin K",
-  "short_name": "whatsapp smiley",
+  "author": "Furkan BAŞARAN, edited by Benjamin K",
+  "short_name": "whatsapp smileys",
   "description" : "convert keyboard shortcuts to whatsapp smiley",
   "version" : "0.9.4",
   "permissions": ["http://web.whatsapp.com/*", "https://web.whatsapp.com/*"],
@@ -25,5 +24,6 @@
   ],
   "web_accessible_resources": [
     "config/*.json"
-  ]
+  ],
+  "offline_enabled": false
 }
