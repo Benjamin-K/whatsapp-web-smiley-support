@@ -129,7 +129,6 @@
   "O-)":                    {"alt": "😇", "class": "emoji emojiordered1160"},
 
 
-  // Nature
   ":ocean:": {"alt": "🌊", "class": "emoji emojiordered0405"},
   ":rainbow:": {"alt": "🌈", "class": "emoji emojiordered0403"},
   ":foggy:": {"alt": "🌁", "class": "emoji emojiordered0396"},
