@@ -12,14 +12,14 @@
   };
 
   var helpers = {
-    loadConfig: function(config) {
+    loadConfig: function(type) {
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-          config[config] = JSON.parse(xhr.response);
+          config[type] = JSON.parse(xhr.response);
         }
       };
-      xhr.open("GET", chrome.extension.getURL('/config/'+config+'.json'), true);
+      xhr.open("GET", chrome.extension.getURL('/config/'+type+'.json'), true);
       xhr.send();
     },
 
