@@ -47,12 +47,13 @@
 
   document.addEventListener('keyup', function(e) {
     if (e.target.isContentEditable && helpers.selection.anchorNode.nodeType === 3) {
-      var message = helpers.selection.anchorNode.nodeValue;
+      var message = helpers.selection.anchorNode.nodeValue,
+          position = helpers.selection.anchorOffset;
 
       for (var string in config.icons) {
-        if (helpers.selection.anchorOffset - string.length > -1 &&
-            message.substr(helpers.selection.anchorOffset - string.length, helpers.selection.anchorOffset) === string) {
-          helpers.replaceSmiley(helpers.selection.anchorNode, string, helpers.selection.anchorOffset - string.length);
+        if (position - string.length > -1 &&
+            message.substr(position - string.length, string.length) === string) {
+          helpers.replaceSmiley(helpers.selection.anchorNode, string, position - string.length);
           break;
         }
       }
