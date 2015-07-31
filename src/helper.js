@@ -25,20 +25,42 @@
     },
 
     replaceSmiley: function(node, icon, start, end) {
-      var img = document.createElement('img');
-      img.className = icon['class'];
-      img.src = config.additionalAttributes.src;
-      img.alt = icon.alt;
-      img.setAttribute('draggable', config.additionalAttributes.draggable);
+      var smileyPannelIsOpen = document.querySelector('.icon-hide') !== null,
+          iconClass = icon['class'].substr(6),
+          pannels = [
+            '.icon-emoji-people',
+            '.icon-emoji-nature',
+            '.icon-emoji-things',
+            '.icon-emoji-places',
+            '.icon-emoji-symbols'
+          ],
+          smileyInPannel;
+
       helpers.range = helpers.selection.getRangeAt(0);
       helpers.range.setStart(node, start);
       helpers.range.setEnd(node, end);
       helpers.range.deleteContents();
-      helpers.range.insertNode(img);
-      helpers.range.setStartAfter(img);
-      helpers.range.setEndAfter(img);
       helpers.selection.removeAllRanges();
       helpers.selection.addRange(helpers.range);
+
+      if (!smileyPannelIsOpen) {
+        document.querySelector('.icon-smiley').click();
+        document.querySelector('.emoji-panel').style.display = 'none';
+      }
+      for (var i=0; i<pannels.length; i++) {
+        document.querySelector(pannels[i]).click();
+        smileyInPannel = document.querySelector('.emoji-panel-body .' + iconClass);
+        if (smileyInPannel !== null) {
+          smileyInPannel.click();
+          break;
+        }
+      }
+      if (!smileyPannelIsOpen) {
+        document.querySelector('.icon-hide').click();
+        setTimeout(function() {
+          document.querySelector('.emoji-panel').style.display = '';
+        }, 600);
+      }
     },
 
     filterIcons: function(smileyStart) {
