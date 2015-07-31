@@ -17,9 +17,8 @@
         "http://web.whatsapp.com/*",
         "https://web.whatsapp.com/*"
       ],
-      "js" : [
-        "src/helper.js"
-      ]
+      "css": ["src/helper.css"],
+      "js" : ["src/helper.js"]
     }
   ],
   "web_accessible_resources": [
