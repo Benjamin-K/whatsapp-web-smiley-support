@@ -41,6 +41,20 @@
       helpers.selection.addRange(helpers.range);
     },
 
+    filterIcons: function(smileyStart) {
+      var icons = {};
+      if (config.icons[smileyStart] !== undefined) {
+        icons[smileyStart] = config.icons[smileyStart];
+        return icons;
+      }
+      for (var smiley in config.icons) {
+        if (smiley.indexOf(smileyStart) === 0) {
+          icons[smiley] = config.icons[smiley];
+        }
+      }
+      return icons;
+    },
+
     selection: window.getSelection(),
     range: null
   };
@@ -48,13 +62,18 @@
   document.addEventListener('keyup', function(e) {
     if (e.target.isContentEditable && helpers.selection.anchorNode.nodeType === 3) {
       var message = helpers.selection.anchorNode.nodeValue,
-          position = helpers.selection.anchorOffset;
+          position = helpers.selection.anchorOffset,
+          messagePart = message.substr(0, helpers.selection.anchorOffset - 1),
+          smileyOffset = messagePart.lastIndexOf(':'),
+          icons = {};
 
-      for (var string in config.icons) {
-        if (position - string.length > -1 &&
-            message.substr(position - string.length, string.length) === string) {
-          helpers.replaceSmiley(helpers.selection.anchorNode, string, position - string.length);
-          break;
+      if (smileyOffset > -1) {
+        var smileyStart = messagePart.substr(smileyOffset) + message.substr(helpers.selection.anchorOffset - 1, 1);
+        icons = helpers.filterIcons(smileyStart);
+        console.log(icons, icons.length, icons[smileyStart]);
+        if (icons.hasOwnProperty(smileyStart)) {
+          helpers.replaceSmiley(helpers.selection.anchorNode, smileyStart, smileyOffset);
+          return;
         }
       }
     }
