@@ -5,6 +5,7 @@
 
   var config = {
     icons: {},
+    shortIcons: {},
     additionalAttributes: {
       draggable: false,
       src: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
@@ -23,16 +24,15 @@
       xhr.send();
     },
 
-    replaceSmiley: function(node, smiley, start) {
-      var icon = config.icons[smiley],
-          img = document.createElement('img');
+    replaceSmiley: function(node, icon, start, end) {
+      var img = document.createElement('img');
       img.className = icon['class'];
       img.src = config.additionalAttributes.src;
       img.alt = icon.alt;
       img.setAttribute('draggable', config.additionalAttributes.draggable);
       helpers.range = helpers.selection.getRangeAt(0);
       helpers.range.setStart(node, start);
-      helpers.range.setEnd(node, start + smiley.length);
+      helpers.range.setEnd(node, end);
       helpers.range.deleteContents();
       helpers.range.insertNode(img);
       helpers.range.setStartAfter(img);
@@ -70,15 +70,22 @@
       if (smileyOffset > -1) {
         var smileyStart = messagePart.substr(smileyOffset) + message.substr(helpers.selection.anchorOffset - 1, 1);
         icons = helpers.filterIcons(smileyStart);
-        console.log(icons, icons.length, icons[smileyStart]);
         if (icons.hasOwnProperty(smileyStart)) {
-          helpers.replaceSmiley(helpers.selection.anchorNode, smileyStart, smileyOffset);
+          helpers.replaceSmiley(helpers.selection.anchorNode, config.icons[smileyStart], smileyOffset, smileyOffset + smileyStart.length);
           return;
+        }
+      }
+
+      for (var smiley in config.shortIcons) {
+        console.log(smiley, config.shortIcons[smiley]);
+        if (position - smiley.length > -1 &&
+          message.substr(position - smiley.length, smiley.length) === smiley) {
+          helpers.replaceSmiley(helpers.selection.anchorNode, config.shortIcons[smiley], position - smiley.length, position);
         }
       }
     }
   });
 
   helpers.loadConfig('icons');
-
+  helpers.loadConfig('shortIcons');
 })();
