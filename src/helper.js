@@ -17,11 +17,25 @@
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-          config[type] = JSON.parse(xhr.response);
+          config[type] = helpers.sortObject(JSON.parse(xhr.response));
         }
       };
       xhr.open("GET", chrome.extension.getURL('/config/'+type+'.json'), true);
       xhr.send();
+    },
+
+    sortObject: function(object) {
+      var sortedObject = {},
+          keysSorted;
+      keysSorted = Object.keys(object).sort(function(a,b){
+        if (a < b) return -1;
+        if (b < a) return 1;
+        return 0;
+      });
+      for (var i=0; i<keysSorted.length; i++) {
+        sortedObject[keysSorted[i]] = object[keysSorted[i]];
+      }
+      return sortedObject;
     },
 
     replaceSmiley: function(node, iconClass, start, end) {
@@ -72,6 +86,8 @@
       for (var smiley in config.icons) {
         if (smiley.indexOf(smileyStart) === 0) {
           icons[smiley] = config.icons[smiley];
+        } else if (smiley > smileyStart) {
+          break;
         }
       }
       return icons;
