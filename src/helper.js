@@ -24,9 +24,8 @@
       xhr.send();
     },
 
-    replaceSmiley: function(node, icon, start, end) {
+    replaceSmiley: function(node, iconClass, start, end) {
       var smileyPannelIsOpen = document.querySelector('.icon-hide') !== null,
-          iconClass = icon['class'].substr(6),
           pannels = [
             '.icon-emoji-people',
             '.icon-emoji-nature',
@@ -35,6 +34,7 @@
             '.icon-emoji-symbols'
           ],
           smileyInPannel;
+      iconClass = iconClass.split(' ')[1];
 
       helpers.range = helpers.selection.getRangeAt(0);
       helpers.range.setStart(node, start);
@@ -77,37 +77,148 @@
       return icons;
     },
 
+    buildSmileyList: function(icons, smileyStart) {
+      var smileyList = '',
+          isFirst = true;
+      for (var smiley in icons) {
+        smileyList += '<li' + (isFirst ? ' class="wawss-autocomplete-selected"' : '') + '>';
+        smileyList += '<img src="' + config.additionalAttributes.src + '" draggable="' + (config.additionalAttributes.draggable ? 'true' : 'false') + '" class="' + icons[smiley]['class'] + '" alt="' + icons[smiley].alt + '"> ';
+        if (smileyStart) {
+          smileyList += '<strong>' + smileyStart + '</strong>' + smiley.substr(smileyStart.length);
+        } else {
+          smileyList += smiley;
+        }
+        isFirst = false;
+      }
+      return smileyList;
+    },
+
+    initAutocomplete: function() {
+      helpers.autocomplete.classList.add('wawss-autocomplete-list');
+      helpers.autocomplete.classList.add('wawss-hidden');
+      var autocompleteWrapper = document.createElement('div');
+      autocompleteWrapper.classList.add('wawss-autocomplete-wrapper');
+      autocompleteWrapper.appendChild(helpers.autocomplete);
+      document.body.appendChild(autocompleteWrapper);
+    },
+
+    isAutocompleteVisible: function() {
+      return !helpers.autocomplete.classList.contains('wawss-hidden');
+    },
+
+    selectPreviousListitem: function() {
+      var selected = document.querySelector('.wawss-autocomplete-selected'),
+          newSelected, offset;
+      if (selected !== null) {
+        selected.classList.remove('wawss-autocomplete-selected');
+        if (selected === helpers.autocomplete.firstChild) {
+          newSelected = helpers.autocomplete.lastChild;
+          helpers.autocomplete.scrollTop = newSelected.offsetTop + newSelected.offsetHeight + 20;
+        } else {
+          newSelected = selected.previousElementSibling;
+          offset = newSelected.offsetTop - helpers.autocomplete.scrollTop;
+          if (offset < 0) {
+            helpers.autocomplete.scrollTop = helpers.autocomplete.scrollTop + offset - 50;
+          }
+        }
+        newSelected.classList.add('wawss-autocomplete-selected');
+      }
+    },
+
+    selectNextListitem: function() {
+      var selected = document.querySelector('.wawss-autocomplete-selected'),
+          newSelected, offset;
+      if (selected !== null) {
+        selected.classList.remove('wawss-autocomplete-selected');
+        if (selected === helpers.autocomplete.lastChild) {
+          newSelected = helpers.autocomplete.firstChild;
+          helpers.autocomplete.scrollTop = 0;
+        } else {
+          newSelected = selected.nextElementSibling;
+          offset = newSelected.offsetTop + newSelected.offsetHeight - helpers.autocomplete.scrollTop - helpers.autocomplete.offsetHeight;
+          if (offset > 0) {
+            helpers.autocomplete.scrollTop = helpers.autocomplete.scrollTop + offset + 50;
+          }
+        }
+        newSelected.classList.add('wawss-autocomplete-selected');
+      }
+    },
+
+    insertIcon: function() {
+      var selected = document.querySelector('.wawss-autocomplete-selected');
+      if (selected !== null) {
+        var enteredText = selected.querySelector('strong').innerText,
+            end = helpers.selection.anchorOffset,
+            start = end - enteredText.length;
+        helpers.replaceSmiley(helpers.selection.anchorNode, selected.firstChild.className, start, end);
+      }
+      helpers.autocomplete.classList.add('wawss-hidden');
+    },
+
     selection: window.getSelection(),
-    range: null
+    range: null,
+    autocomplete: document.createElement('ul'),
+
+    checkSmileys: true
   };
 
+  document.addEventListener('keydown', function(e) {
+    if (helpers.isAutocompleteVisible()) {
+      if (e.which === 13) {
+        e.preventDefault();
+        e.stopPropagation();
+        helpers.insertIcon();
+        helpers.checkSmileys = false;
+      } else if (e.which === 37 || e.which === 38 || (e.which === 9 && e.shiftKey === true)) {
+        e.preventDefault();
+        helpers.selectPreviousListitem();
+        helpers.checkSmileys = false;
+      } else if (e.which === 39 || e.which === 40 || (e.which === 9 && e.shiftKey === false)) {
+        e.preventDefault();
+        helpers.selectNextListitem();
+        helpers.checkSmileys = false;
+      }
+    }
+  });
+
   document.addEventListener('keyup', function(e) {
-    if (e.target.isContentEditable && helpers.selection.anchorNode.nodeType === 3) {
+    if (e.target.isContentEditable && helpers.selection.anchorNode.nodeType === 3 &&
+      e.which !== 9 && e.which !== 16 && helpers.checkSmileys) {
       var message = helpers.selection.anchorNode.nodeValue,
           position = helpers.selection.anchorOffset,
           messagePart = message.substr(0, helpers.selection.anchorOffset - 1),
           smileyOffset = messagePart.lastIndexOf(':'),
           icons = {};
 
-      if (smileyOffset > -1) {
-        var smileyStart = messagePart.substr(smileyOffset) + message.substr(helpers.selection.anchorOffset - 1, 1);
-        icons = helpers.filterIcons(smileyStart);
-        if (icons.hasOwnProperty(smileyStart)) {
-          helpers.replaceSmiley(helpers.selection.anchorNode, config.icons[smileyStart], smileyOffset, smileyOffset + smileyStart.length);
+      for (var smiley in config.shortIcons) {
+        if (position - smiley.length > -1 &&
+          message.substr(position - smiley.length, smiley.length) === smiley) {
+          helpers.replaceSmiley(helpers.selection.anchorNode, config.shortIcons[smiley]['class'], position - smiley.length, position);
+          helpers.autocomplete.classList.add('wawss-hidden');
           return;
         }
       }
 
-      for (var smiley in config.shortIcons) {
-        console.log(smiley, config.shortIcons[smiley]);
-        if (position - smiley.length > -1 &&
-          message.substr(position - smiley.length, smiley.length) === smiley) {
-          helpers.replaceSmiley(helpers.selection.anchorNode, config.shortIcons[smiley], position - smiley.length, position);
+      if (smileyOffset > -1) {
+        var smileyStart = messagePart.substr(smileyOffset) + message.substr(helpers.selection.anchorOffset - 1, 1);
+        icons = helpers.filterIcons(smileyStart);
+        if (icons.hasOwnProperty(smileyStart)) {
+          helpers.replaceSmiley(helpers.selection.anchorNode, config.icons[smileyStart]['class'], smileyOffset, smileyOffset + smileyStart.length);
+        } else {
+          var listItems = helpers.buildSmileyList(icons, smileyStart);
+          if (listItems.length > 0) {
+            helpers.autocomplete.innerHTML = listItems;
+            helpers.autocomplete.classList.remove('wawss-hidden');
+            return;
+          }
         }
       }
+      helpers.autocomplete.classList.add('wawss-hidden');
     }
+    helpers.checkSmileys = true;
   });
 
   helpers.loadConfig('icons');
   helpers.loadConfig('shortIcons');
+  helpers.initAutocomplete();
 })();

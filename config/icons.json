@@ -108,6 +108,7 @@
   ":kissing_heart:":        {"alt": "😘", "class": "emoji emojiordered1177"},
   ":heart_eyes:":           {"alt": "😍", "class": "emoji emojiordered1166"},
   ":relaxed:":              {"alt": "☺", "class": "emoji emojiordered0055"},
+  ":wink:":                 {"alt": "😉", "class": "emoji emojiordered1162"},
   ":blush:":                {"alt": "😊", "class": "emoji emojiordered1163"},
   ":grinning:":             {"alt": "😀", "class": "emoji emojiordered1153"},
   ":smiley:":               {"alt": "😃", "class": "emoji emojiordered1156"},
