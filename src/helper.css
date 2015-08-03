@@ -11,12 +11,14 @@
 .wawss-autocomplete-list {
   display: block;
   margin: 0;
+  overflow: auto;
   padding: 10px;
   position: absolute;
   bottom: 60px;
   left: 38%;
   right: 0;
   background-color: #fff;
+  max-height: 30%;
   z-index: 999;
 }
 
