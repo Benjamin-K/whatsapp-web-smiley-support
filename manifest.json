@@ -3,7 +3,7 @@
   "author": "Furkan BAŞARAN, edited by Benjamin K",
   "short_name": "whatsapp smileys",
   "description" : "convert keyboard shortcuts to whatsapp smiley",
-  "version" : "1.0.1",
+  "version" : "1.0.2",
   "permissions": ["http://web.whatsapp.com/*", "https://web.whatsapp.com/*"],
   "manifest_version" : 2,
   "icons": {

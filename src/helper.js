@@ -204,12 +204,15 @@
           position = helpers.selection.anchorOffset,
           messagePart = message.substr(0, helpers.selection.anchorOffset - 1),
           smileyOffset = messagePart.lastIndexOf(':'),
+          listHeightBefore = helpers.autocomplete.offsetHeight,
+          paneBody = document.querySelector('.pane-body.pane-chat-body'),
           icons = {};
 
       for (var smiley in config.shortIcons) {
         if (position - smiley.length > -1 &&
           message.substr(position - smiley.length, smiley.length) === smiley) {
           helpers.replaceSmiley(helpers.selection.anchorNode, config.shortIcons[smiley]['class'], position - smiley.length, position);
+          paneBody.style.paddingBottom = '';
           helpers.autocomplete.classList.add('wawss-hidden');
           return;
         }
@@ -225,13 +228,26 @@
           if (listItems.length > 0) {
             helpers.autocomplete.innerHTML = listItems;
             helpers.autocomplete.classList.remove('wawss-hidden');
+            var listHeight = helpers.autocomplete.offsetHeight;
+            paneBody.style.paddingBottom = 8 + listHeight + 'px';
+            if (listHeightBefore < listHeight) {
+              paneBody.scrollTop = paneBody.scrollTop  + listHeight - listHeightBefore;
+            }
             return;
           }
         }
       }
+      paneBody.style.paddingBottom = '';
       helpers.autocomplete.classList.add('wawss-hidden');
     }
     helpers.checkSmileys = true;
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.isContentEditable) {
+      document.querySelector('.pane-body.pane-chat-body').style.paddingBottom = '';
+      helpers.autocomplete.classList.add('wawss-hidden');
+    }
   });
 
   helpers.loadConfig('icons');
